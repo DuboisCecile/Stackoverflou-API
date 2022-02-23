@@ -9,13 +9,18 @@ function getEnv(variable) {
   return value;
 }
 
+const PORT = getEnv(`PORT`);
+const CORS_ALLOWED_ORIGINS = getEnv(`CORS_ALLOWED_ORIGINS`);
+const MONGODB_DATABASE = getEnv("MONGODB_DATABASE");
 const MONGODB_USER = getEnv(`MONGODB_USER`);
 const MONGODB_PASSWORD = getEnv(`MONGODB_PASSWORD`);
 const JWT_TOKEN_SECRET = getEnv("JWT_TOKEN_SECRET");
 
 module.exports = {
-  getEnv,
+  PORT,
+  CORS_ALLOWED_ORIGINS,
   MONGODB_USER,
   MONGODB_PASSWORD,
   JWT_TOKEN_SECRET,
+  MONGODB_DATABASE,
 };

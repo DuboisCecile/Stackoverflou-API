@@ -1,27 +1,27 @@
 const fs = require("fs");
-const Thing = require("../models/thing");
+const Topic = require("../models/topic");
 
-exports.createThing = (req, res, next) => {
-  const thingObject = JSON.parse(req.body.thing);
-  delete thingObject._id;
-  const thing = new Thing({
-    ...thingObject,
+exports.createTopic = (req, res, next) => {
+  const topicObject = JSON.parse(req.body.topic);
+  delete topicObject._id;
+  const topic = new Topic({
+    ...topicObject,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
   });
-  thing
+  topic
     .save()
     .then(() => res.status(201).json({ message: "Objet enregistré !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.getOneThing = (req, res, next) => {
-  Thing.findOne({
+exports.getOneTopic = (req, res, next) => {
+  Topic.findOne({
     _id: req.params.id,
   })
-    .then((thing) => {
-      res.status(200).json(thing);
+    .then((topic) => {
+      res.status(200).json(topic);
     })
     .catch((error) => {
       res.status(404).json({
@@ -30,29 +30,29 @@ exports.getOneThing = (req, res, next) => {
     });
 };
 
-exports.modifyThing = (req, res, next) => {
-  const thingObject = req.file
+exports.modifyTopic = (req, res, next) => {
+  const topicObject = req.file
     ? {
-        ...JSON.parse(req.body.thing),
+        ...JSON.parse(req.body.topic),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
           req.file.filename
         }`,
       }
     : { ...req.body };
-  Thing.updateOne(
+  Topic.updateOne(
     { _id: req.params.id },
-    { ...thingObject, _id: req.params.id }
+    { ...topicObject, _id: req.params.id }
   )
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.deleteThing = (req, res, next) => {
-  Thing.findOne({ _id: req.params.id })
-    .then((thing) => {
-      const filename = thing.imageUrl.split("/images/")[1];
+exports.deleteTopic = (req, res, next) => {
+  Topic.findOne({ _id: req.params.id })
+    .then((topic) => {
+      const filename = topic.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
-        Thing.deleteOne({ _id: req.params.id })
+        Topic.deleteOne({ _id: req.params.id })
           .then(() => res.status(200).json({ message: "Objet supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
       });
@@ -60,10 +60,10 @@ exports.deleteThing = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
-exports.getAllStuff = (req, res, next) => {
-  Thing.find()
-    .then((things) => {
-      res.status(200).json(things);
+exports.getAllTopics = (req, res, next) => {
+  Topic.find()
+    .then((topics) => {
+      res.status(200).json(topics);
     })
     .catch((error) => {
       res.status(400).json({

@@ -3,14 +3,31 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { JWT_TOKEN_SECRET } = require("../env");
 
+exports.getAllUsers = (req, res, next) => {
+  User.find()
+    .then((users) => {
+      res.status(200).json(users);
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
+};
+
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
       const user = new User({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        nickname: req.body.nickname,
         email: req.body.email,
         password: hash,
+        creationDate: req.body.creationDate,
       });
+
       user
         .save()
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
