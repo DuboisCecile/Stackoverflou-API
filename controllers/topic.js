@@ -36,7 +36,7 @@ exports.createTopic = (req, res, next) => {
   const topic = new Topic({
     title: req.body.title,
     description: req.body.description,
-    creationDate: req.body.creationDate,
+    creationDate: new Date(),
     user_id: req.currentUser,
   });
   topic

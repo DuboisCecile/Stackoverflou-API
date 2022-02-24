@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const topicRoutes = require("./routes/topic");
 const userRoutes = require("./routes/user");
+const messageRoutes = require("./routes/message");
 
 const {
   CORS_ALLOWED_ORIGINS,
@@ -52,5 +53,6 @@ app.use((req, res, next) => {
 
 app.use("/api/topics", topicRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/messages", messageRoutes);
 
 module.exports = app;

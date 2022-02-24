@@ -9,9 +9,7 @@ exports.getAllUsers = (req, res, next) => {
       res.status(200).json(users);
     })
     .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
+      res.status(400).json({ error });
     });
 };
 
@@ -90,7 +88,6 @@ exports.deleteUser = (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-  console.log(req.currentUser);
   req.currentUser = null;
   res.status(200).json({ message: "Utilisateur déconnecté !" });
 };
