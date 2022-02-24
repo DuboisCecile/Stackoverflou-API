@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
 const topicRoutes = require("./routes/topic");
 const userRoutes = require("./routes/user");
 
@@ -51,8 +50,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/topic", topicRoutes);
+app.use("/api/topics", topicRoutes);
 app.use("/api/users", userRoutes);
-app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;

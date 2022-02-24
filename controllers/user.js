@@ -25,9 +25,8 @@ exports.signup = (req, res, next) => {
         nickname: req.body.nickname,
         email: req.body.email,
         password: hash,
-        creationDate: req.body.creationDate,
+        creationDate: new Date(),
       });
-
       user
         .save()
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
@@ -37,25 +36,61 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
+  const errorMsg = "Utilisateur non trouvé ou mot de passe incorrect !";
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
-        return res.status(401).json({ error: "Utilisateur non trouvé !" });
+        return res.status(401).json({ errorMsg });
       }
       bcrypt
         .compare(req.body.password, user.password)
         .then((valid) => {
           if (!valid) {
-            return res.status(401).json({ error: "Mot de passe incorrect !" });
+            return res.status(401).json({ errorMsg });
           }
           res.status(200).json({
-            userId: user._id,
-            token: jwt.sign({ userId: user._id }, JWT_TOKEN_SECRET, {
-              expiresIn: "24h",
+            user_id: user._id,
+            token: jwt.sign({ user_id: user._id }, JWT_TOKEN_SECRET, {
+              expiresIn: "1h",
             }),
           });
         })
         .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
+};
+
+exports.modifyUser = async (req, res, next) => {
+  let password;
+  if (req.body.password) {
+    password = await bcrypt.hash(req.body.password, 10);
+  }
+  const updatedUser = {
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    nickname: req.body.nickname,
+    email: req.body.email,
+    password,
+  };
+
+  User.updateOne({ _id: req.currentUser }, updatedUser)
+    .then(() => res.status(200).json({ message: "Utilisateur modifié !" }))
+    .catch((error) => res.status(400).json({ error }));
+};
+
+exports.deleteUser = (req, res, next) => {
+  console.log("deleteUser", req.currentUser);
+  User.deleteOne({ _id: req.currentUser })
+    .then(() =>
+      res
+        .status(200)
+        .json({ _id: req.currentUser, message: "Utilisateur supprimé !" })
+    )
+    .catch((error) => res.status(400).json({ error }));
+};
+
+exports.logout = (req, res, next) => {
+  console.log(req.currentUser);
+  req.currentUser = null;
+  res.status(200).json({ message: "Utilisateur déconnecté !" });
 };
