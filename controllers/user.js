@@ -46,14 +46,39 @@ exports.login = (req, res, next) => {
           if (!valid) {
             return res.status(401).json({ errorMsg });
           }
+          const currentToken = jwt.sign(
+            { user_id: user._id },
+            JWT_TOKEN_SECRET,
+            {
+              expiresIn: "1h",
+            }
+          );
+          res.cookie("token", currentToken, { httpOnly: true });
           res.status(200).json({
             user_id: user._id,
-            token: jwt.sign({ user_id: user._id }, JWT_TOKEN_SECRET, {
-              expiresIn: "1h",
-            }),
+            token: currentToken,
           });
         })
         .catch((error) => res.status(500).json({ error }));
+    })
+    .catch((error) => res.status(500).json({ error }));
+};
+
+const getSafeAttributes = (user) => {
+  if (user) {
+    return {
+      ...user.toObject(), // use of .toObject() to convert MongoDB result into a plain-old JavaScript object, and remove additional stuff
+      password: undefined,
+    };
+  }
+  return {};
+};
+
+exports.getCurrentUser = async (req, res, next) => {
+  User.findOne({ _id: req.currentUser })
+    .then((user) => {
+      const safeUser = getSafeAttributes(user);
+      return res.status(201).send(safeUser);
     })
     .catch((error) => res.status(500).json({ error }));
 };
@@ -77,7 +102,6 @@ exports.modifyUser = async (req, res, next) => {
 };
 
 exports.deleteUser = (req, res, next) => {
-  console.log("deleteUser", req.currentUser);
   User.deleteOne({ _id: req.currentUser })
     .then(() =>
       res
