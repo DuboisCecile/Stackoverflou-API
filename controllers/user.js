@@ -14,6 +14,7 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 exports.signup = (req, res, next) => {
+  console.log(req);
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
