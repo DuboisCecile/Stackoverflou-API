@@ -14,7 +14,6 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 exports.signup = (req, res, next) => {
-  console.log(req);
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
@@ -68,7 +67,7 @@ exports.login = (req, res, next) => {
 const getSafeAttributes = (user) => {
   if (user) {
     return {
-      ...user.toObject(), // use of .toObject() to convert MongoDB result into a plain-old JavaScript object, and remove additional stuff
+      ...user.toObject(),
       password: undefined,
     };
   }

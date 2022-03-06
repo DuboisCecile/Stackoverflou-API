@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
         const data = item.trim().split("=");
         return { ...res, [data[0]]: data[1] };
       }, {}) || {};
-    console.log(values.token);
+    // console.log(values);
     const token = values?.token;
     // const token = req.headers.authorization.split(" ")[1];
     // console.log(req.headers.cookie);

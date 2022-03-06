@@ -2,8 +2,15 @@ const Topic = require("../models/topic");
 
 exports.getAllTopics = (req, res, next) => {
   Topic.find()
-    .then((topics) => {
-      res.status(200).json(topics);
+    .populate("author", "nickname")
+    .then(async (topics) => {
+      const updatedTopics = await Promise.all(
+        topics.map((topic) => ({
+          ...topic.toObject(),
+          id: topic._id,
+        }))
+      );
+      res.status(200).json(updatedTopics);
     })
     .catch((error) => {
       res.status(400).json({ error });
@@ -38,6 +45,7 @@ exports.createTopic = (req, res, next) => {
     description: req.body.description,
     creationDate: new Date(),
     user_id: req.currentUser,
+    author: req.currentUser,
   });
   topic
     .save()
